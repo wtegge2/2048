@@ -19,7 +19,7 @@ typedef struct
 	int cols;
 	
 	/* Pointer to the beginning of the board cell data.  The cells are organized
-       in a 1D array in a row-major layout ( http://en.wikipedia.org/wiki/Row-major_order ) */
+       in a 1D array in a row-major layout */
     cell * cells;
 	
 	/* Score of current game. */
