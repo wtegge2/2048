@@ -10,30 +10,30 @@
 // the move functions combine the adjacent cells in the specified direction. Lastly, the legal_move_check function checks if there are anymore legal 
 // moves left for the user to do. If not, then the game ends. 
 
-// partners: wtegge2, ddecla3, jcruda2
 
 
 game * make_game(int rows, int cols)
-/*! Create an instance of a game structure with the given number of rows
-    and columns, initializing elements to -1 and return a pointer
+
+/*! Created an instance of a game structure with the given number of rows
+    and columns, initializing elements to -1 and returning a pointer
     to it. (See game.h for the specification for the game data structure) 
     The needed memory should be dynamically allocated with the malloc family
     of functions.
 */
 {
-    //Dynamically allocate memory for game and cells (DO NOT modify this)
+    //Dynamically allocate memory for game and cells 
     game * mygame = malloc(sizeof(game));
     mygame->cells = malloc(rows*cols*sizeof(cell));
 
-    //YOUR CODE STARTS HERE:  Initialize all other variables in game struct
+    //Initialize all other variables in game struct
 
 	mygame->rows = rows; // sets rows in the struct
 	mygame->cols = cols; // sets columns in the struct
 	mygame->score = 0; // sets score in the struct to 0
 
-	for (int i = 0; i < cols; i++) { //for loop for columns
-		for (int j = 0; j < rows; j++) { //for loop for rows
-			(mygame->cells)[j*cols+i] = -1; // goes through setting up the game to be empty
+	for (int i = 0; i < cols; i++) { 			//for loop for columns
+		for (int j = 0; j < rows; j++) { 		//for loop for rows
+			(mygame->cells)[j*cols+i] = -1; 	// goes through setting up the game to be empty
 		}
 	}
 
@@ -41,37 +41,43 @@ game * make_game(int rows, int cols)
 }
 
 void remake_game(game ** _cur_game_ptr,int new_rows,int new_cols)
-/*! Given a game structure that is passed by reference, change the
+
+/*! Given a game structure that is passed by reference, this function changes the
 	game structure to have the given number of rows and columns. Initialize
-	the score and all elements in the cells to -1. Make sure that any 
+	the score and all elements in the cells to -1. Made sure that any 
 	memory previously allocated is not lost in this function.	
 */
+
 {
-	/*Frees dynamically allocated memory used by cells in previous game,
-	 then dynamically allocates memory for cells in new game.  DO NOT MODIFY.*/
+	// Frees dynamically allocated memory used by cells in previous game,
+	// then dynamically allocates memory for cells in new game. 
+	
 	free((*_cur_game_ptr)->cells);
 	(*_cur_game_ptr)->cells = malloc(new_rows*new_cols*sizeof(cell));
 
-	 //YOUR CODE STARTS HERE:  Re-initialize all other variables in game struct
+	 //Re-initialize all other variables in the game struct
 	
-	game * mygame = *_cur_game_ptr; // sets mygame pointer to the address of current game 
+	game * mygame = *_cur_game_ptr; 	// sets mygame pointer to the address of current game 
 
-	mygame->rows = new_rows; // sets rows in the struct
-	mygame->cols = new_cols; // sets columns in the struct
-	mygame->score = 0; // sets score in the struct to 0
+	mygame->rows = new_rows; 			// sets rows in the struct
+	mygame->cols = new_cols; 			// sets columns in the struct
+	mygame->score = 0; 					// sets score in the struct to 0
 	
-	for (int i = 0; i < new_cols; i++) { //for loop for columns
-		for (int j = 0; j < new_rows; j++) { //for loop for rows
-			(mygame->cells)[j*new_cols+i] = -1; // goes through setting up the game to be empty
+	for (int i = 0; i < new_cols; i++) { 			//for loop for columns
+		for (int j = 0; j < new_rows; j++) { 		//for loop for rows
+			(mygame->cells)[j*new_cols+i] = -1; 	//goes through setting up the game to be empty
 		}
 	}
 
 	return;	
 }
 
+
 void destroy_game(game * cur_game)
-/*! Deallocate any memory acquired with malloc associated with the given game instance.
-    This includes any substructures the game data structure contains. Do not modify this function.*/
+
+/*! Deallocates any memory acquired with malloc associated with the given game instance.
+    This includes any substructures the game data structure contains. */
+
 {
     free(cur_game->cells);
     free(cur_game);
@@ -80,39 +86,41 @@ void destroy_game(game * cur_game)
 }
 
 cell * get_cell(game * cur_game, int row, int col)
-/*! Given a game, a row, and a column, return a pointer to the corresponding
+
+/*! Given a game, a row, and a column, this function returns a pointer to the corresponding
     cell on the game. (See game.h for game data structure specification)
-    This function should be handy for accessing game cells. Return NULL
+    This function should be handy for accessing game cells. The function returns NULL
 	if the row and col coordinates do not exist.
 */
 {
-    //YOUR CODE STARTS HERE
 
-	if ((row >= 0) && (row < cur_game->rows)) { // checks if row of cell is in bounds
-		if ((col >= 0) && (col < cur_game->cols)) { // checks if column of cell is in bounds
-			return (cur_game->cells + row*cur_game->cols+col); // return cell
+	if ((row >= 0) && (row < cur_game->rows)) { 					// checks if row of cell is in the bounds
+		if ((col >= 0) && (col < cur_game->cols)) { 				// checks if column of cell is in the bounds
+			return (cur_game->cells + row*cur_game->cols+col); 		// return cell
 		}
 	}
-    		return NULL; // return nothing
+    		return NULL;			// returns nothing if row and col do not exist
 }
 
 int shift_up(game * cur_game){
+
 // helper function for move_w (shifts every value up)
+
 	int r = cur_game->rows;
 	int c = cur_game->cols;
 	int i;
 	int j;
-	int shift_flag = 0; //initializes flag
+	int shift_flag = 0; 			//initializes flag
 
-	for(j = 0; j<c; j++){ //loops through all columns
-		int empty; //must find first empty cell
+	for(j = 0; j<c; j++){ 							//loops through all columns
+		int empty; 									//must find first empty cell
 		for(empty=0; empty<r && *get_cell(cur_game, empty, j) != -1; empty++);
-		for(i = empty+1; i<r; i++){ //loops through each cell that is able to shift up
-			if(*get_cell(cur_game, i, j) != -1){ // checks if value needs to be shifted up
-			*get_cell(cur_game, empty, j) = *get_cell(cur_game, i, j); // shifts value up to empty spot
-			*get_cell(cur_game, i, j) = -1; // clear value's previous spot
-			empty++; // increment empty spot because the empty spot has shifted
-			shift_flag = 1; // sets flag to 1 if there is a shift
+		for(i = empty+1; i<r; i++){ 								//loops through each cell that is able to shift up
+			if(*get_cell(cur_game, i, j) != -1){ 					// checks if value needs to be shifted up
+			*get_cell(cur_game, empty, j) = *get_cell(cur_game, i, j); 			// shifts value up to empty spot
+			*get_cell(cur_game, i, j) = -1; 									// clear value's previous spot
+			empty++; 								// increment empty spot because the empty spot has shifted
+			shift_flag = 1; 						// sets flag to 1 if there is a shift
 			}
 		}
 	}
@@ -121,42 +129,41 @@ int shift_up(game * cur_game){
 
 
 int move_w(game * cur_game)
+
 /*!Slides all of the tiles in cur_game upwards. If a tile matches with the
    one above it, the tiles are merged by adding their values together. When
    tiles merge, increase the score by the value of the new tile. A tile can
    not merge twice in one turn. If sliding the tiles up does not cause any
    cell to change value, w is an invalid move and return 0. Otherwise, return 1.
 */
-/* Get algorithm from lab video or on the wiki
+/* 
    Go into each of the N cols in the MxN matrix and slide each column up
    Must make sure that the row above the target row* has not been combined yet
    Go through each pair, and if they match then combine them
-
 */
 {
-    //YOUR CODE STARTS HERE
 
-	int r = cur_game->rows; // r = rows
-	int c = cur_game->cols; // c = cols
+	int r = cur_game->rows;			// r = rows
+	int c = cur_game->cols; 		// c = cols
 	int i;
 	int j;
-	int s = cur_game->score; // s = score
-	int comb_flag = 0; //initalizes variable
-	int first_shift_flag = 0; //initalizes variable
+	int s = cur_game->score; 		// s = score
+	int comb_flag = 0; 				//initalizes variable
+	int first_shift_flag = 0; 		//initalizes variable
 
-	first_shift_flag = shift_up(cur_game); // call function to shift everything up (all nonempty now touching)
+	first_shift_flag = shift_up(cur_game); 			// call helper function to shift everything up (all nonempty now touching)
 
-	for(i=0; i<r-1; i++){ //loop through the top of each pair
-		for(j=0; j<c; j++){ //loop through each column
-			if((*get_cell(cur_game, i, j) != -1) && (*get_cell(cur_game, i, j)==*get_cell(cur_game, i+1, j))){ //checks if matches the value below it
-			*get_cell(cur_game, i, j) *= 2; //doubles the top value (combining them)
-			*get_cell(cur_game, i+1, j) = -1; //clears the bottom value, making it empty
-			cur_game->score = s + *get_cell(cur_game, i, j); // increases score by the value of new tile
-			comb_flag = 1; //sets comb_flag to one 
+	for(i=0; i<r-1; i++){ 				//loop through the top of each pair
+		for(j=0; j<c; j++){ 			//loop through each column
+			if((*get_cell(cur_game, i, j) != -1) && (*get_cell(cur_game, i, j)==*get_cell(cur_game, i+1, j))){ 	//checks if matches the value below it
+			*get_cell(cur_game, i, j) *= 2; 		//doubles the top value (combining them)
+			*get_cell(cur_game, i+1, j) = -1; 		//clears the bottom value, making it empty
+			cur_game->score = s + *get_cell(cur_game, i, j); 			// increases score by the value of new tile made
+			comb_flag = 1; 				//sets comb_flag to one 
 			}
 		}
 	}
-	if(shift_up(cur_game) || comb_flag || first_shift_flag) // once things combined, it shifts again and checks if overall move is valid based on the flags
+	if(shift_up(cur_game) || comb_flag || first_shift_flag) // once cells combined, it shifts again and checks if overall move is valid based on the flags
     		return 1;
 	else
 		return 0;
@@ -164,23 +171,24 @@ int move_w(game * cur_game)
 
 
 int shift_down(game * cur_game){
-// helper function for move_s (shifts every value down)
+
+// helper function for move_s (shifts every value down) (VERY similar to other shift helper functions)
 
 	int r = cur_game->rows;
 	int c = cur_game->cols;
 	int i;
 	int j;
-	int shift_flag = 0; //initializes flag
+	int shift_flag = 0; 			//initializes flag
 
-	for(j = 0; j<c; j++){ //loops through all columns
-		int empty; //must find first empty cell
+	for(j = 0; j<c; j++){ 			//loops through all columns
+		int empty; 					//must find first empty cell
 		for(empty=r-1; empty>=0 && *get_cell(cur_game, empty, j) != -1; empty--);
-		for(i = empty-1; i>=0; i--){ //loops through each cell that is able to shift down
-			if(*get_cell(cur_game, i, j) != -1){ // checks if value needs to be shifted down
-				*get_cell(cur_game, empty, j) = *get_cell(cur_game, i, j); // shifts value down to empty spot
-				*get_cell(cur_game, i, j) = -1; // clear value's previous spot
-				empty--; // increment empty spot because the empty spot has shifted
-				shift_flag = 1; // sets flag to 1 if there is a shift
+		for(i = empty-1; i>=0; i--){ 						//loops through each cell that is able to shift down
+			if(*get_cell(cur_game, i, j) != -1){ 			// checks if value needs to be shifted down
+				*get_cell(cur_game, empty, j) = *get_cell(cur_game, i, j); 			// shifts value down to empty spot
+				*get_cell(cur_game, i, j) = -1; 									// clear value's previous spot
+				empty--; 						// increment empty spot because the empty spot has shifted
+				shift_flag = 1; 				// sets flag to 1 if there is a shift
 			}
 		}
 	}
@@ -188,33 +196,33 @@ int shift_down(game * cur_game){
 }
 
 
-int move_s(game * cur_game) //slide down
-// same as move_w, but slide down. Basically same algorithm, but just adjust for difference in direction
-{
-    //YOUR CODE STARTS HERE
+int move_s(game * cur_game) 	//slide down
 
-	int r = cur_game->rows; // r = rows
-	int c = cur_game->cols; // c = cols
+// same as move_w, but slides cells down. Basically the same algorithm, but changed slightly to account for the difference in direction
+{
+
+	int r = cur_game->rows; 			// r = rows
+	int c = cur_game->cols; 			// c = cols
 	int i;
 	int j;
-	int s = cur_game->score; // s = score
-	int comb_flag = 0; //initializes variable
-	int first_shift_flag = 0; //initializes variable
+	int s = cur_game->score; 			// s = score
+	int comb_flag = 0; 					//initializes variable
+	int first_shift_flag = 0; 			//initializes variable
 
-	first_shift_flag = shift_down(cur_game); // call function to shift everything down (all nonempty now touching)
+	first_shift_flag = shift_down(cur_game); 		// call helper function to shift everything down (all nonempty now touching)
 	
-	for(i=r-1; i>0; i--){ //loop through the top of each pair
-		for(j=0; j<c; j++){ //loop through each column
-			if((*get_cell(cur_game, i, j) != -1) && (*get_cell(cur_game, i, j)==*get_cell(cur_game, i-1, j))){ //checks if matches the value below it
-				*get_cell(cur_game, i, j) *= 2; //doubles the bottom value (combining them)
-				*get_cell(cur_game, i-1, j) = -1; //clears the top value, making it empty
-				cur_game->score = s + *get_cell(cur_game, i, j); // increases score by the value of new tile
-				comb_flag = 1; //sets comb_flag to 1
+	for(i=r-1; i>0; i--){ 				//loop through the top of each pair
+		for(j=0; j<c; j++){ 			//loop through each column
+			if((*get_cell(cur_game, i, j) != -1) && (*get_cell(cur_game, i, j)==*get_cell(cur_game, i-1, j))){ 			//checks if cell value matches the value below it
+				*get_cell(cur_game, i, j) *= 2; 				//doubles the bottom value (combining them)
+				*get_cell(cur_game, i-1, j) = -1; 				//clears the top value, making it empty
+				cur_game->score = s + *get_cell(cur_game, i, j); 		// increases score by the value of new tile
+				comb_flag = 1; 			//sets comb_flag to 1
 			}
 		}
 	}
 
-	if(shift_down(cur_game) || comb_flag || first_shift_flag) // once things combined, it shifts again and checks if overall move is valid based on the flags
+	if(shift_down(cur_game) || comb_flag || first_shift_flag) 			// once things combined, it shifts again and checks if overall move is valid based on the flags
 		return 1;
 	else
 		return 0;
@@ -230,17 +238,17 @@ int shift_left(game * cur_game){
 	int c = cur_game->cols;
 	int i;
 	int j;
-	int shift_flag = 0; //initializes flag
+	int shift_flag = 0; 						//initializes flag
 
-	for(i = 0; i<r; i++){ //loops through all columns
-		int empty; //must find first empty cell
+	for(i = 0; i<r; i++){ 						//loops through all columns
+		int empty; 								//must find first empty cell
 		for(empty=0; empty<c && *get_cell(cur_game, i, empty) != -1; empty++);
-		for(j = empty+1; j<c; j++){ //loops through each cell that is able to shift left
-			if(*get_cell(cur_game, i, j) != -1){ // checks if value needs to be shifted left
-				*get_cell(cur_game, i, empty) = *get_cell(cur_game, i, j); // shifts value left to empty spot
-				*get_cell(cur_game, i, j) = -1; // clear value's previous spot
-				empty++; // increment empty spot because the empty spot has shifted
-				shift_flag = 1; // sets flag to 1 if there is a shift
+		for(j = empty+1; j<c; j++){ 					//loops through each cell that is able to shift left
+			if(*get_cell(cur_game, i, j) != -1){ 		// checks if value needs to be shifted left
+				*get_cell(cur_game, i, empty) = *get_cell(cur_game, i, j); 			// shifts value left to empty spot
+				*get_cell(cur_game, i, j) = -1; 									// clear value's previous spot
+				empty++; 								// increment empty spot because the empty spot has shifted
+				shift_flag = 1; 						// sets flag to 1 if there is a shift
 			}
 		}
 	}
@@ -248,31 +256,30 @@ int shift_left(game * cur_game){
 }
 
 int move_a(game * cur_game) //slide left
-// same as move_w, but slide left. Basically same algorithm, but just adjust for difference in direction
+// same as move_w, but slide left. Basically the same algorithm, but changed slightly to account for the difference in direction
 {
-    //YOUR CODE STARTS HERE
-
-	int r = cur_game->rows; // r = rows
-	int c = cur_game->cols; // c = cols
+    
+	int r = cur_game->rows; 			// r = rows
+	int c = cur_game->cols; 			// c = cols
 	int i;
 	int j;
-	int s = cur_game->score; // s = score
-	int comb_flag = 0; //initializes variable
-	int first_shift_flag = 0; //initializes variable
+	int s = cur_game->score; 			// s = score
+	int comb_flag = 0; 					//initializes variable
+	int first_shift_flag = 0; 			//initializes variable
 
-	first_shift_flag = shift_left(cur_game); // call function to shift everything left (all nonempty now touching)
+	first_shift_flag = shift_left(cur_game); 			// call function to shift everything left (all nonempty now touching)
 	
-	for(j=0; j<c-1; j++){ //loop through the left of each pair
-		for(i=0; i<r; i++){ //loop through each row
-			if((*get_cell(cur_game, i, j) != -1) && (*get_cell(cur_game, i, j)==*get_cell(cur_game, i, j+1))){ //checks if matches the value below it
-				*get_cell(cur_game, i, j) *= 2; //doubles the left value (combining them)
-				*get_cell(cur_game, i, j+1) = -1; //clears the right value, making it empty
-				cur_game->score = s + *get_cell(cur_game, i, j); // increases score by the value of new tile
+	for(j=0; j<c-1; j++){ 				//loop through the left of each pair
+		for(i=0; i<r; i++){ 			//loop through each row
+			if((*get_cell(cur_game, i, j) != -1) && (*get_cell(cur_game, i, j)==*get_cell(cur_game, i, j+1))){ 			//checks if matches the value below it
+				*get_cell(cur_game, i, j) *= 2; 							//doubles the left value (combining them)
+				*get_cell(cur_game, i, j+1) = -1; 							//clears the right value, making it empty
+				cur_game->score = s + *get_cell(cur_game, i, j); 			// increases score by the value of new tile
 				comb_flag = 1;
 			}
 		}
 	}
-	if(shift_left(cur_game) || comb_flag || first_shift_flag) // call function to shift everything left (all nonempty now touching)
+	if(shift_left(cur_game) || comb_flag || first_shift_flag) 				// call function to shift everything left (all nonempty now touching)
 		return 1;
 	else
 		return 0;
@@ -287,17 +294,17 @@ int shift_right(game * cur_game){
 	int c = cur_game->cols;
 	int i;
 	int j;
-	int shift_flag = 0; //initializes flag
+	int shift_flag = 0; 				//initializes flag
 
-	for(i = 0; i<r; i++){ //loops through all columns
-		int empty; //must find first empty cell
+	for(i = 0; i<r; i++){ 				//loops through all columns
+		int empty; 						//must find first empty cell
 		for(empty=c-1; empty>=0 && *get_cell(cur_game, i, empty) != -1; empty--);
-		for(j = empty-1; j>=0; j--){ //loops through each cell that is able to shift left
-			if(*get_cell(cur_game, i, j) != -1){ // checks if value needs to be shifted left
-				*get_cell(cur_game, i, empty) = *get_cell(cur_game, i, j); // shifts value left to empty spot
-				*get_cell(cur_game, i, j) = -1; // clear value's previous spot
-				empty--; // increment empty spot because the empty spot has shifted
-				shift_flag = 1; // sets flag to 1 if there is a shift
+		for(j = empty-1; j>=0; j--){ 								//loops through each cell that is able to shift left
+			if(*get_cell(cur_game, i, j) != -1){ 					// checks if value needs to be shifted left
+				*get_cell(cur_game, i, empty) = *get_cell(cur_game, i, j); 				// shifts value left to empty spot
+				*get_cell(cur_game, i, j) = -1; 										// clear value's previous spot
+				empty--; 									// increment empty spot because the empty spot has shifted
+				shift_flag = 1; 							// sets flag to 1 if there is a shift
 			}
 		}
 	}
@@ -307,54 +314,51 @@ int shift_right(game * cur_game){
 
 
 int move_d(game * cur_game){ //slide to the right
-// same as move_w, but slide right. Basically same algorithm, but just adjust for difference in direction
-    //YOUR CODE STARTS HERE
-
-
-	int r = cur_game->rows; // r = rows
-	int c = cur_game->cols; // c = cols
+// same as move_w, but slide right. Basically the same algorithm, but just adjust for difference in direction
+    
+	int r = cur_game->rows; 				// r = rows
+	int c = cur_game->cols; 				// c = cols
 	int i;
 	int j;
-	int s = cur_game->score; // s = score
-	int comb_flag = 0; //initializes variable
-	int first_shift_flag = 0; //initializes variable
+	int s = cur_game->score; 				// s = score
+	int comb_flag = 0; 						//initializes variable
+	int first_shift_flag = 0; 				//initializes variable
 
-	first_shift_flag = shift_right(cur_game); // call function to shift everything left (all nonempty now touching)
+	first_shift_flag = shift_right(cur_game); 				// call function to shift everything left (all nonempty now touching)
 
-	for(j=c-1; j>0; j--){ //loop through the left of each pair
-		for(i=0; i<r; i++){ //loop through each row
-			if((*get_cell(cur_game, i, j) != -1) && (*get_cell(cur_game, i, j)==*get_cell(cur_game, i, j-1))){ //checks if matches the value below it
-				*get_cell(cur_game, i, j) *= 2; //doubles the left value (combining them)
-				*get_cell(cur_game, i, j-1) = -1; //clears the right value, making it empty
-				cur_game->score = s + *get_cell(cur_game, i, j); // increases score by the value of new tile
+	for(j=c-1; j>0; j--){ 									//loop through the left of each pair
+		for(i=0; i<r; i++){ 								//loop through each row
+			if((*get_cell(cur_game, i, j) != -1) && (*get_cell(cur_game, i, j)==*get_cell(cur_game, i, j-1))){ 			//checks if matches the value below it
+				*get_cell(cur_game, i, j) *= 2; 										//doubles the left value (combining them)
+				*get_cell(cur_game, i, j-1) = -1; 										//clears the right value, making it empty
+				cur_game->score = s + *get_cell(cur_game, i, j); 						//increases score by the value of new tile
 				comb_flag = 1;
 			}
 		}
 	}
-	if(shift_right(cur_game) || comb_flag || first_shift_flag) // once things combined, it shifts again and checks if overall move is valid based on the flags
+	if(shift_right(cur_game) || comb_flag || first_shift_flag) //once cells are combined, it shifts again and checks if overall move is valid based on the flags
 		return 1;
 	else
 		return 0;
 };
 
 int legal_move_check(game * cur_game)
-/*! Given the current game check if there are any legal moves on the board. There are
+/*! Given the current game, this function checks if there are any legal moves on the board. There are
     no legal moves if sliding in any direction will not cause the game to change.
-	Return 1 if there are possible legal moves, 0 if there are none.
+	Return 1 if there are possible legal moves, and 0 if there are none.
  */
 {
-    //YOUR CODE STARTS HERE
-
+    
 	int r = cur_game->rows; // r = rows
 	int c = cur_game->cols; // c = cols
 	int i;
 	int j;
-	for (i = 0; i < r; i++) { //for loop for rows
-		for (j = 0; j < c; j++) { //for loop for columns
-			if(*get_cell(cur_game, i, j)==-1) { //valid move if cell is empty
+	for (i = 0; i < r; i++) { 								//for loop for rows
+		for (j = 0; j < c; j++) { 							//for loop for columns
+			if(*get_cell(cur_game, i, j)==-1) { 			//valid move if cell is empty
 				return 1;
 			}
-			if(*get_cell(cur_game, i, j)!=-1) { //if cell has number, it checks if cell can move based on the next if statements
+			if(*get_cell(cur_game, i, j)!=-1) { 			//if cell has number, it checks if cell can move based on the next if statements
 		
 				if((i>0 && i<r-1) && ((*get_cell(cur_game, i, j)== *get_cell(cur_game, i+1, j)) || (*get_cell(cur_game, i, j)== *get_cell(cur_game, i-1, j))))
 					return 1;
@@ -373,11 +377,9 @@ int legal_move_check(game * cur_game)
 		}
 	}
 
-   return 0; //returns 0 if move is invalid
+   return 0; 				//returns 0 if move is invalid
 }
 
-
-/*! code below is provided and should not be changed */
 
 void rand_new_tile(game * cur_game)
 /*! insert a new tile into a random empty cell. First call rand()%(rows*cols) to get a random value between 0 and (rows*cols)-1.
